@@ -50,14 +50,15 @@ def load_saved_preprocessed_features(app_name):
     return None
 
 def preprocess_features(features):
-    preprocessed_features = []
+    preprocessed_features = set()
+
     for feature in features:
         if not is_emoji_only(feature) and not contains_weird_characters(feature):
             preprocessed_feature = preprocess_feature(feature)
             if is_english(preprocessed_feature):
-                preprocessed_features.append(preprocessed_feature)
+                preprocessed_features.add(preprocessed_feature)
 
-    return preprocessed_features
+    return list(preprocessed_features)
 
 def preprocess_feature(feature):
     feature = feature.replace('_', ' ')

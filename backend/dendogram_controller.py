@@ -27,7 +27,6 @@ def generate_dendogram():
     if request_content['features'] is None:
         return make_response("No features", 400)
 
-    # Generate the dendrogram file
     dendogram_file = dendogram_service.generate_dendogram(preprocessing,
                                                           affinity,
                                                           metric,
@@ -37,7 +36,6 @@ def generate_dendogram():
                                                           verb_weight,
                                                           request_content)
 
-    # Return an OK response with the file path
     return jsonify({"message": "Dendrogram generated successfully", "dendrogram_path": dendogram_file}), 200
 
 

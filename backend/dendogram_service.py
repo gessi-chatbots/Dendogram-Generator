@@ -4,6 +4,7 @@ import os
 from .Context import Context
 from . import Affinity_strategy
 from dotenv import load_dotenv
+from .preprocessing_service import preprocess_features
 
 load_dotenv()
 def preprocessed_app(app_name):
@@ -35,21 +36,30 @@ def generate_dendogram(preprocessing,
     app_name = request_content['app_name']
     features = request_content['features']
 
+    # Preprocessing step
     if preprocessing and not preprocessed_app(app_name):
-        features = call_preprocessing_service(features)
+        features = preprocess_features(features)
         save_preprocessed_features(features, app_name)
     elif preprocessing and preprocessed_app(app_name):
         features = load_saved_preprocessed_features(app_name)
 
-    if embedding == 'bert-embedding':
+    if embedding == 'bert':
         context = Context(Affinity_strategy.BertEmbeddingAffinity())
-        return context.use_affinity_algorithm(application_name=app_name,
-                                              data=features,
-                                              linkage=linkage,
-                                              object_weight=object_weight,
-                                              verb_weight=verb_weight,
-                                              distance_threshold=distance_threshold,
-                                              metric=metric)
+    elif embedding == 'paraphrase':
+        context = Context(Affinity_strategy.ParaphraseEmbeddingAffinity())
+    elif embedding == 'tf-idf':
+        context = Context(Affinity_strategy.TfidfEmbeddingAffinity())
+    else:
+        raise ValueError(f"Unsupported embedding method: {embedding}")
+
+    return context.use_affinity_algorithm(application_name=app_name,
+                                          data=features,
+                                          linkage=linkage,
+                                          object_weight=object_weight,
+                                          verb_weight=verb_weight,
+                                          distance_threshold=distance_threshold,
+                                          metric=metric)
+
 
 
 def call_preprocessing_service(features):

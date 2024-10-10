@@ -15,6 +15,7 @@ spacy = "*"
 pyspellchecker = "*"
 python-dotenv = "*"
 pandas = "*"
+requests = "*"
 
 [requires]
 python_version = "3.9"
